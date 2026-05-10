@@ -47,6 +47,9 @@ export default function Home() {
             <Link href="/nutrition" className="text-sm text-indigo-500 hover:text-indigo-700">
               Nutrition →
             </Link>
+            <Link href="/steps" className="text-sm text-indigo-500 hover:text-indigo-700">
+              Steps →
+            </Link>
             <Link href="/entries" className="text-sm text-indigo-500 hover:text-indigo-700">
               All entries →
             </Link>
