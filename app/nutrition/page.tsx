@@ -280,9 +280,9 @@ function MonthWeeklyBars({ byDay, today, year, month }: {
             const hasData = s && !s.isEmpty;
             const pct = hasData ? s.avgCal / maxCal : 0;
             const mt  = hasData ? s.avgProtein + s.avgCarbs + s.avgFat : 0;
-            const pPct = mt > 0 && s ? s.avgProtein / mt : 1/3;
-            const cPct = mt > 0 && s ? s.avgCarbs   / mt : 1/3;
-            const fPct = mt > 0 && s ? s.avgFat     / mt : 1/3;
+            const pPct = hasData && mt > 0 ? s.avgProtein / mt : 1/3;
+            const cPct = hasData && mt > 0 ? s.avgCarbs   / mt : 1/3;
+            const fPct = hasData && mt > 0 ? s.avgFat     / mt : 1/3;
             const rangeLabel = hasData ? `${s.start.getDate()}–${s.end.getDate()} ${s.start.toLocaleDateString("en-GB", { month: "short" })}` : "";
 
             return (
