@@ -5,7 +5,10 @@ import { useState } from "react";
 type Reading = { timestamp: string; weight_kg: number };
 
 function toDateKey(d: Date) {
-  return d.toISOString().slice(0, 10);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 
 export default function CalendarView({ readings }: { readings: Reading[] }) {
@@ -13,7 +16,7 @@ export default function CalendarView({ readings }: { readings: Reading[] }) {
 
   const byDay: Record<string, number[]> = {};
   readings.forEach((r) => {
-    const key = r.timestamp.slice(0, 10);
+    const key = toDateKey(new Date(r.timestamp));
     if (!byDay[key]) byDay[key] = [];
     byDay[key].push(r.weight_kg);
   });
