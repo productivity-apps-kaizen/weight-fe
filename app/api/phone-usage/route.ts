@@ -1,6 +1,16 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+export async function OPTIONS() {
+  return new Response(null, { status: 204, headers: CORS });
+}
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const date = searchParams.get("date") ?? new Date().toISOString().slice(0, 10);
@@ -9,7 +19,7 @@ export async function GET(req: Request) {
   const col = client.db(process.env.MONGODB_DB).collection("phone_usage");
   const records = await col.find({ date }).sort({ minutes: -1 }).toArray();
 
-  return NextResponse.json(records);
+  return NextResponse.json(records, { headers: CORS });
 }
 
 interface UsageRecord {
