@@ -19,15 +19,28 @@ export async function OPTIONS() {
   return new Response(null, { status: 204, headers: CORS });
 }
 
-// GET /api/phone-sessions?date=YYYY-MM-DD
-// Returns all sessions whose startMs falls within that local day.
+// GET /api/phone-sessions?startMs=<epoch>&endMs=<epoch>
+// Returns all sessions whose startMs falls within [startMs, endMs].
+// Also accepts legacy ?date=YYYY-MM-DD (treated as UTC, kept for compatibility).
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const date = searchParams.get("date") ?? new Date().toLocaleDateString("en-CA");
 
-  // Build UTC ms range for the requested local date
-  const startMs = new Date(date + "T00:00:00").getTime();
-  const endMs   = new Date(date + "T23:59:59.999").getTime();
+  let startMs: number;
+  let endMs: number;
+
+  const startParam = searchParams.get("startMs");
+  const endParam   = searchParams.get("endMs");
+
+  if (startParam && endParam) {
+    // Preferred: caller supplies epoch ms directly — no timezone ambiguity.
+    startMs = Number(startParam);
+    endMs   = Number(endParam);
+  } else {
+    // Legacy date-string fallback (UTC).
+    const date = searchParams.get("date") ?? new Date().toISOString().slice(0, 10);
+    startMs = new Date(date + "T00:00:00Z").getTime();
+    endMs   = new Date(date + "T23:59:59.999Z").getTime();
+  }
 
   const client = await clientPromise;
   const col = client.db(process.env.MONGODB_DB).collection("phone_sessions");
